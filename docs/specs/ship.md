@@ -1,55 +1,39 @@
-# agent-skills, Component Specifications
+# `ship`, Specification
 
-What every plugin and every component in this repo must **do** and **contain**,
+What this plugin and each of its components must **do** and **contain**,
 specified at the level another agent needs to re-author it from a blank page.
-This is the generative companion to [`ARCHITECTURE.md`](ARCHITECTURE.md) (which
-gives the shape) and [`GLOSSARY.md`](GLOSSARY.md) (which gives the vocabulary),
-and exists to meet the reconstruction bar of
-[ADR-0011](decisions/0011-docs-must-reconstruct-the-repo.md). The recreation
-procedure that ties them together is [`BUILD.md`](BUILD.md).
+Canonical for this plugin's contracts
+([ADR-0015](../decisions/0015-specs-are-one-file-per-plugin-under-docs.md)). The
+spec shape and the repo-wide rules are in
+[`docs/specs/README.md`](README.md).
 
-This is a **current-state** doc: it describes the components on disk today. A
-decided-but-unbuilt change is flagged inline as *Pending ADR-NNNN* and specified
-in the ledger, never silently folded in here.
+**Current state.** This describes what is on disk today. A decided-but-unbuilt
+change is flagged inline as *Pending ADR-NNNN* and specified in the ledger, never
+silently folded in.
 
-## How to read a spec
-
-Each component lists:
-
-- **Path and frontmatter**: where the file goes and its exact YAML header.
-- **Responsibility**: the one job it owns.
-- **Contract**: what its body must encode, step by step or field by field. This
-  is the requirement, not the wording. Two bodies that satisfy the same contract
-  are both correct ([ADR-0005](decisions/0005-author-from-a-blank-page.md):
-  expression is re-authored, never copied).
-- **Edges**: what it spawns, loads, or depends on.
-
-Author every body under the house rules in [`BUILD.md`](BUILD.md#agentsmd) and the
-skill-writing standard ([ADR-0009](decisions/0009-own-the-skill-writing-standard.md)).
-
----
-
-## Plugin: `ship`
+## The plugin
 
 Drives one issue to a reviewed draft PR. One plugin, not several, because its two
 skills share `reference/repo-contract.md` and both drive its two agents (the
-cohesion rule, [ADR-0002](decisions/0002-one-plugin-per-unit-grouped-by-cohesion.md)).
+cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohesion.md)).
 
-**`ship/.claude-plugin/plugin.json`** follows the plugin manifest template in
-[`BUILD.md`](BUILD.md), which fixes the mechanical fields (`$schema`, `author`,
-`repository`, `license`). Per-plugin values:
+**`.claude-plugin/plugin.json`** follows the manifest template in
+[`AGENTS.md`](../../AGENTS.md#adding-a-plugin), which fixes the mechanical fields
+(`$schema`, `author`, `repository`, `license`). Per-plugin values:
 
 - `name`: `ship`
-- `version`: `0.1.0`, bumped when behaviour changes
+- `version`: `0.2.0`, bumped when behaviour changes
 - `description`: one line, the issue-to-reviewed-PR summary
 - `keywords`: `["workflow", "code-review", "github", "subagents"]`
 - `skills`: `["./", "./skills/"]`. The `"./"` is load-bearing: a plugin with a
   root `SKILL.md` **and** a `skills/` subdirectory needs it, because the
   auto-single-skill rule only fires when there is no `skills/` subdirectory.
-- *Pending [ADR-0010](decisions/0010-extract-the-review-baseline-into-a-library-skill.md):*
-  add `dependencies: ["tdd", "committing", "code-review"]`.
+- `dependencies`: `["tdd", "committing"]`, the two skills `ship:implementer`
+  names ([ADR-0006](../decisions/0006-declare-invoked-skills-as-dependencies.md)).
+- *Pending [ADR-0010](../decisions/0010-extract-the-review-baseline-into-a-library-skill.md):*
+  add `code-review` to `dependencies` once that plugin exists.
 
-### `/ship` — `ship/SKILL.md`
+## `/ship` (`SKILL.md`)
 
 - **Frontmatter**: `name: ship`; `description` (one line); `disable-model-invocation: true`.
 - **Responsibility**: the **orchestrator**. Writes no product code and reviews
@@ -86,9 +70,10 @@ cohesion rule, [ADR-0002](decisions/0002-one-plugin-per-unit-grouped-by-cohesion
      thread). Blocking findings (confirmed correctness, and any spec finding)
      cannot be deferred. Re-enter 4 once the implementer has pushed.
   7. **Round boundary.** Print a summary (round number, findings per axis, each
-     disposition, what changed). Then check in order: circuit breakers (see
-     GLOSSARY); the `agent:stop` label; the round cap (round 3). All clear starts
-     the next round immediately, without waiting for the user.
+     disposition, what changed). Then check in order: circuit breakers (see the
+     [glossary](../GLOSSARY.md)); the `agent:stop` label; the round cap
+     (round 3). All clear starts the next round immediately, without waiting for
+     the user.
   8. **Exit.** Approved: `gh pr ready`, assign `@me`, post a summary comment; the
      user merges. Halted (breaker, stop label, or cap): leave branch and PR as
      they are, add `agent:aborted`, prefix the PR title with `WIP:`, comment with
@@ -96,7 +81,7 @@ cohesion rule, [ADR-0002](decisions/0002-one-plugin-per-unit-grouped-by-cohesion
 - **Edges**: spawns `ship:implementer` (resumed) and `ship:reviewer` (fresh each
   round); reads `reference/repo-contract.md`.
 
-### `ship:implementer` — `ship/agents/implementer.md`
+## `ship:implementer` (`agents/implementer.md`)
 
 - **Frontmatter**: `name: implementer`; `description`; `model: sonnet`;
   `isolation: worktree`; `tools: [Read, Edit, Write, Bash, Grep, Glob, Skill]`.
@@ -125,14 +110,13 @@ cohesion rule, [ADR-0002](decisions/0002-one-plugin-per-unit-grouped-by-cohesion
     wrong; never apply a fix it does not believe in. Push each round as new
     commits on the same branch; never force-push (it destroys review anchors and
     trips a breaker).
-- **Edges**: `Skill(tdd)`, `Skill(committing)` (Pending ADR-0006/0010: declared
-  in `ship`'s `dependencies`).
+- **Edges**: `Skill(tdd)`, `Skill(committing)`, both declared in `dependencies`.
 
-### `ship:reviewer` — `ship/agents/reviewer.md`
+## `ship:reviewer` (`agents/reviewer.md`)
 
 - **Frontmatter (current)**: `name: reviewer`; `description`; `model: opus`;
   `isolation: worktree`; `tools: [Read, Bash, Grep, Glob]`.
-  - *Pending [ADR-0010](decisions/0010-extract-the-review-baseline-into-a-library-skill.md):*
+  - *Pending [ADR-0010](../decisions/0010-extract-the-review-baseline-into-a-library-skill.md):*
     add `Skill` to `tools`; replace the inline baseline (the stance, the twelve
     smells, and the verify discipline below) with `Skill(review-baseline)`;
     keep the execution shell (ground via `gh pr`, and the posting rules). Two
@@ -184,7 +168,7 @@ cohesion rule, [ADR-0002](decisions/0002-one-plugin-per-unit-grouped-by-cohesion
   `review-baseline`). Grounding via `gh pr`, the CI-green skip, and the
   `gh pr review` verdict are **execution** (they stay here).
 
-### `/grill-pr` — `ship/skills/grill-pr/SKILL.md`
+## `/grill-pr` (`skills/grill-pr/SKILL.md`)
 
 - **Frontmatter**: `name: grill-pr`; `description`; `disable-model-invocation: true`.
 - **Responsibility**: point `ship`'s adversarial reviewer at a PR that already
@@ -202,10 +186,10 @@ cohesion rule, [ADR-0002](decisions/0002-one-plugin-per-unit-grouped-by-cohesion
   5. Report what it posted, then stop. Fixing is not this skill's job, and neither
      is arguing with the findings; the author decides.
 - **Edges**: spawns `ship:reviewer`; reads `reference/repo-contract.md`. Cannot
-  move out of `ship`: it spawns a `ship` agent, so relocating it into a plugin
-  `ship` depends on would cycle.
+  move out of this plugin: it spawns a `ship` agent, so relocating it into a
+  plugin `ship` depends on would cycle.
 
-### `repo-contract` — `ship/reference/repo-contract.md`
+## `repo-contract` (`reference/repo-contract.md`)
 
 - **Responsibility**: define the **contract**, the facts a cold agent needs to
   work in a repo without guessing. It lives in the target repo's `AGENTS.md`
@@ -227,27 +211,3 @@ cohesion rule, [ADR-0002](decisions/0002-one-plugin-per-unit-grouped-by-cohesion
   - Never run on an unconfirmed contract: every round inherits its errors, and a
     wrong verify command costs a full cycle before anything notices.
   - Include a worked **Shape** example of the `## Agent contract` block.
-
----
-
-## Planned components (decided, not yet on disk)
-
-Specified in full in
-[ADR-0010](decisions/0010-extract-the-review-baseline-into-a-library-skill.md)
-and the [`PRD`](PRD.md) first pass. Summarised here so the map is complete; do
-not build these when reproducing the current repo, only when applying the
-pending decision.
-
-- **Plugin `tdd`** — single-skill plugin, the test-first discipline
-  `ship:implementer` invokes. Authored from a blank page, the third-party `tdd`
-  as prior art only.
-- **Plugin `committing`** — single-skill plugin, the atomic-commit and
-  Conventional-Commit discipline `ship:implementer` invokes. Same authoring rule.
-- **Plugin `code-review`** — two skills sharing the review domain:
-  - `skills/review-baseline` — the review **knowledge** (stance, twelve smells,
-    verify-and-failure-scenario discipline, blocking-versus-advisory
-    classification), `disable-model-invocation: true`. Loaded by name, a library.
-  - `SKILL.md` (`/code-review`) — an in-session wrapper that loads
-    `review-baseline` and reviews the working-tree diff by default, falling back
-    to the merge-base with the default branch, accepting an explicit base, and
-    skipping the spec axis when no spec is given (as `grill-pr` does).
