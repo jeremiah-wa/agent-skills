@@ -15,8 +15,12 @@ user entry point in its own right. Authored from a blank page
 ([ADR-0005](../decisions/0005-author-from-a-blank-page.md)).
 
 Manifest per-plugin values: `name` `tdd`; `version` `0.1.0`; `keywords`
-`["testing", "tdd", "discipline"]`. No `skills` field: a root `SKILL.md` with no
-`skills/` subdirectory picks itself up.
+`["development", "implementation", "tdd", "testing", "refactoring"]`. The
+keywords name the work this is reached for, not the artefact it produces: it is
+invoked when building something, and a search for "testing" alone would surface
+it to the wrong reader. They are marketplace discovery metadata only, and take
+no part in invocation, which the `description` drives. No `skills` field: a root
+`SKILL.md` with no `skills/` subdirectory picks itself up.
 
 ## `/tdd` (`SKILL.md`)
 
