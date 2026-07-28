@@ -20,9 +20,14 @@ What is true now lives in [`docs/`](docs/). Read before changing.
 ```bash
 claude plugin validate . --strict                    # the marketplace manifest
 claude plugin validate ./plugins/<plugin> --strict   # a plugin manifest
-claude plugin init <name> --with skills agents       # scaffold a new plugin
+claude plugin init <name> --with skills agents       # scaffold, then move it (see below)
 /reload-plugins                                      # after any change under agents/
 ```
+
+`claude plugin init` scaffolds into `~/.claude/skills/<name>/`, not into
+`plugins/`. Move it to `plugins/<name>/` before doing anything else: left where
+it lands it loads as `<name>@skills-dir` and shadows the real plugin
+([ADR-0016](docs/decisions/0016-call-skills-by-their-namespaced-name.md)).
 
 `SKILL.md` edits apply live in the current session. Changes under `agents/`,
 `hooks/`, and manifests need `/reload-plugins` or a restart.
