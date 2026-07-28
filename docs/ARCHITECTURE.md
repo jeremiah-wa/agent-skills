@@ -107,10 +107,19 @@ Skills reach other skills by **naming them in prose**. This works across plugin
 boundaries because it resolves at runtime through the `Skill` tool, with no path
 resolution involved.
 
-The failure mode is silence: a named skill that is not installed produces
-nothing. The manifest `dependencies` array is the only declaration the platform
-enforces, so every skill named in a skill body or an agent brief is declared
-there. See [ADR-0006](decisions/0006-declare-invoked-skills-as-dependencies.md).
+There are two failure modes, and both are silent.
+
+**Not installed.** A named skill that is absent produces nothing. The manifest
+`dependencies` array is the only declaration the platform enforces, so every
+skill named in a skill body or an agent brief is declared there. See
+[ADR-0006](decisions/0006-declare-invoked-skills-as-dependencies.md).
+
+**Shadowed.** A skill in `~/.claude/skills/` presents un-namespaced and wins any
+bare-name call, so `Skill(tdd)` can resolve to something this repo never wrote
+while every manifest still validates. Agent-facing calls therefore use the
+namespaced form, `Skill(tdd:tdd)`, which resolves past a collision. Bare names
+stay at the human entry points (`/tdd`), where a person can see what loaded. See
+[ADR-0016](decisions/0016-call-skills-by-their-namespaced-name.md).
 
 Today, with `code-review` still to be built
 ([ADR-0010](decisions/0010-extract-the-review-baseline-into-a-library-skill.md)

@@ -48,3 +48,4 @@ just doc edits, not ADRs. (See the Workflow section of [`AGENTS.md`](../../AGENT
 | [0013](0013-keep-plugins-in-a-plugins-directory.md) | Keep plugins in a `plugins/` directory | Accepted |
 | [0014](0014-plugin-specs-live-in-the-plugin.md) | A plugin's spec lives in the plugin | Superseded by ADR-0015 |
 | [0015](0015-specs-are-one-file-per-plugin-under-docs.md) | Specs are one file per plugin, under `docs/specs/` | Accepted |
+| [0016](0016-call-skills-by-their-namespaced-name.md) | Call skills by their namespaced name | Accepted |
