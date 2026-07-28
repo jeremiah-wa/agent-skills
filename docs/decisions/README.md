@@ -43,4 +43,8 @@ just doc edits, not ADRs. (See the Workflow section of [`AGENTS.md`](../../AGENT
 | [0008](0008-document-with-current-state-docs-and-a-ledger.md) | Document the repo with current-state docs and an append-only ledger | Accepted |
 | [0009](0009-own-the-skill-writing-standard.md) | Own the skill-writing standard as a thin skill | Accepted |
 | [0010](0010-extract-the-review-baseline-into-a-library-skill.md) | Extract the review baseline into a shared library skill | Accepted |
-| [0011](0011-docs-must-reconstruct-the-repo.md) | The docs must be able to reconstruct the repo | Accepted |
+| [0011](0011-docs-must-reconstruct-the-repo.md) | The docs must be able to reconstruct the repo | Superseded by ADR-0012 |
+| [0012](0012-specify-per-component-not-per-repo.md) | Specify per component, not per repo | Accepted |
+| [0013](0013-keep-plugins-in-a-plugins-directory.md) | Keep plugins in a `plugins/` directory | Accepted |
+| [0014](0014-plugin-specs-live-in-the-plugin.md) | A plugin's spec lives in the plugin | Superseded by ADR-0015 |
+| [0015](0015-specs-are-one-file-per-plugin-under-docs.md) | Specs are one file per plugin, under `docs/specs/` | Accepted |
