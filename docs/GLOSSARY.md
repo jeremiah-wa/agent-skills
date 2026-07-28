@@ -28,8 +28,9 @@ direction was questioned. See
 |---|---|
 | **Junction** | A Windows directory link (`mklink /J`), needing no elevation and no Developer Mode. How this repo's plugins are loaded in place while being authored, so `SKILL.md` edits apply live. Git Bash's `ln -s` silently copies instead, which looks identical and never picks up an edit. |
 | **Skills-dir plugin** | A plugin loaded from `~/.claude/skills/<name>` rather than from a marketplace, appearing as `<name>@skills-dir`. The authoring mode here. |
-| **Switchover** | The moment `mattpocock-skills` is uninstalled and this collection stands alone. No fixed trigger; the author's judgement. Also the trigger for making this repo public ([ADR-0007](decisions/0007-private-until-switchover.md)). |
+| **Switchover** | The moment `mattpocock-skills` is uninstalled and this collection stands alone. No fixed trigger; my judgement. Also the trigger for making this repo public ([ADR-0007](decisions/0007-private-until-switchover.md)). |
 | **Prior art** | A third-party skill read for reference and then closed, never copied, whether met at the bootstrap or adopted later once earned by use. Ideas and vocabulary carry over; expression does not ([ADR-0005](decisions/0005-author-from-a-blank-page.md)). |
+| **Owned / borrowed / local / manual** | The four statuses a step of the practice can have in [`PRACTICE.md`](PRACTICE.md). **Owned**: the skill is a plugin here. **Borrowed**: a third-party skill installed on the machine. **Local**: authored by me but living in `~/.claude/skills/` on one machine only, unversioned. **Manual**: no skill runs the step. Only **owned** is portable; the other three all mean the step does not happen for anyone else. |
 | **Vendoring** | Copying third-party expression into this repo verbatim. Not the approach at any stage. An external skill is adopted only by re-authoring it to the house standard after it has earned its place by use, which is blank-page authoring of examined prior art ([ADR-0005](decisions/0005-author-from-a-blank-page.md)), not a copy. |
 
 ## Skills

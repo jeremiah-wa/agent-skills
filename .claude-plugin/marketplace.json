@@ -1,0 +1,26 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "agent-skills",
+  "description": "Curated Claude Code workflows. Each plugin bundles its own skills and agents so a workflow ships as one piece.",
+  "owner": {
+    "name": "Jeremiah Wangaruro",
+    "email": "jeremiahwa98@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "ship",
+      "source": "./plugins/ship",
+      "description": "Issue to reviewed draft PR: a cold implementer builds it, an adversarial reviewer attacks it, GitHub carries the handoff"
+    },
+    {
+      "name": "tdd",
+      "source": "./plugins/tdd",
+      "description": "Test-first at real seams: observe the failure, make it pass, then clean up. Refuses to write a test that cannot fail."
+    },
+    {
+      "name": "committing",
+      "source": "./plugins/committing",
+      "description": "Atomic commits with Conventional Commit messages: one commit does one thing, and the body says why rather than what."
+    }
+  ]
+}
