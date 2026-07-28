@@ -40,6 +40,11 @@ claude plugin init <name> --with skills agents       # scaffold a new plugin
 - **Every skill named in a body or a brief is declared in `dependencies`.**
   Naming a skill that is not installed fails silently
   ([ADR-0006](docs/decisions/0006-declare-invoked-skills-as-dependencies.md)).
+- **Agents call skills namespaced: `Skill(tdd:tdd)`, never `Skill(tdd)`.** A
+  loose skill in `~/.claude/skills/` wins every bare-name call, so a bare call
+  can load something this repo never wrote while every manifest still validates
+  ([ADR-0016](docs/decisions/0016-call-skills-by-their-namespaced-name.md)). Bare
+  names stay at the human entry points, where the wrong skill is visible.
 - **A cold agent gets everything in its brief.** It shares no context with its
   spawner. Anything it needs is pasted in or fetched by it.
 - **Preflight and refuse, do not degrade.** A workflow that needs a tool checks

@@ -31,13 +31,13 @@ Create your branch from the base named in the contract, following the contract's
 
 ## Build
 
-Work test-first at real seams: use `Skill(tdd)`. A behavioural change ships with a test that fails without it.
+Work test-first at real seams: use `Skill(tdd:tdd)`. A behavioural change ships with a test that fails without it.
 
 Where no seam exists (config, a migration, plumbing), say so in the PR body rather than inventing a test that asserts nothing.
 
 Run the contract's **verify** commands as you work, not only at the end. Everything must be green locally before you push, because CI gates whether a review even happens.
 
-Commit with `Skill(committing)`, following the contract's commit pattern.
+Commit with `Skill(committing:committing)`, following the contract's commit pattern.
 
 ## Hand over
 

@@ -94,12 +94,12 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
     invariant is a bug even when tests pass); run the contract's **bootstrap**
     (the worktree is a fresh checkout).
   - **Branch** from the contract's base, following its branch pattern.
-  - **Build** test-first at real seams via `Skill(tdd)`: a behavioural change
+  - **Build** test-first at real seams via `Skill(tdd:tdd)`: a behavioural change
     ships with a test that fails without it. Where no seam exists (config,
     migration, plumbing), say so in the PR body rather than assert nothing. Run
     the contract's **verify** commands throughout; everything green locally before
     pushing, because CI gates whether a review happens. Commit via
-    `Skill(committing)`, following the contract's commit pattern.
+    `Skill(committing:committing)`, following the contract's commit pattern.
   - **Hand over**: push, open a **draft** PR against the base using the repo's PR
     template, referencing the issue so it closes on merge. Fill the template as a
     handover, not a summary: carry what the reviewer cannot get from the diff, the
@@ -110,7 +110,9 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
     wrong; never apply a fix it does not believe in. Push each round as new
     commits on the same branch; never force-push (it destroys review anchors and
     trips a breaker).
-- **Edges**: `Skill(tdd)`, `Skill(committing)`, both declared in `dependencies`.
+- **Edges**: `Skill(tdd:tdd)`, `Skill(committing:committing)`, both declared in
+  `dependencies`. Namespaced so a same-named skill in `~/.claude/skills/` cannot
+  shadow them ([ADR-0016](../decisions/0016-call-skills-by-their-namespaced-name.md)).
 
 ## `ship:reviewer` (`agents/reviewer.md`)
 
