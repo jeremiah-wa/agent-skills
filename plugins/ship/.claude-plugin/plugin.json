@@ -9,7 +9,7 @@
   },
   "repository": "https://github.com/jeremiah-wa/agent-skills",
   "license": "MIT",
-  "keywords": ["workflow", "code-review", "github", "subagents"],
+  "keywords": ["ship"],
   "skills": ["./", "./skills/"],
   "dependencies": ["tdd", "committing"]
 }

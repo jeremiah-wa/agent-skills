@@ -9,5 +9,5 @@
   },
   "repository": "https://github.com/jeremiah-wa/agent-skills",
   "license": "MIT",
-  "keywords": ["git", "commits", "conventional-commits"]
+  "keywords": ["git", "commits"]
 }

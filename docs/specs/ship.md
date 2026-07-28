@@ -28,7 +28,7 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
   change to the rule in [`AGENTS.md`](../../AGENTS.md#workflow). Behaviour
   changes bump normally from the first push onward.
 - `description`: one line, the issue-to-reviewed-PR summary
-- `keywords`: `["workflow", "code-review", "github", "subagents"]`
+- `keywords`: `["ship"]`
 - `skills`: `["./", "./skills/"]`. The `"./"` is load-bearing: a plugin with a
   root `SKILL.md` **and** a `skills/` subdirectory needs it, because the
   auto-single-skill rule only fires when there is no `skills/` subdirectory.

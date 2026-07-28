@@ -16,7 +16,7 @@ from a blank page, and the first skill migrated in from a machine-local
 directory.
 
 Manifest per-plugin values: `name` `committing`; `version` `0.1.0`; `keywords`
-`["git", "commits", "conventional-commits"]`. No `skills` field.
+`["git", "commits"]`. No `skills` field.
 
 ## `/committing` (`SKILL.md`)
 
