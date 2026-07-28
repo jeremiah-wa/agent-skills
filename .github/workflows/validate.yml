@@ -1,0 +1,44 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Validate marketplace
+        run: claude plugin validate . --strict
+
+      - name: Validate plugins
+        run: |
+          found=0
+          for plugin in plugins/*/; do
+            if [ -f "$plugin/.claude-plugin/plugin.json" ]; then
+              found=$((found + 1))
+              echo "::group::$plugin"
+              claude plugin validate "$plugin" --strict
+              echo "::endgroup::"
+            fi
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "No plugin manifests found under plugins/. Refusing to pass."
+            exit 1
+          fi
+          echo "Validated $found plugin(s)."
