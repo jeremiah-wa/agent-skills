@@ -55,8 +55,10 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
   2. **Repo contract.** Follow `reference/repo-contract.md`. A cold agent cannot
      be briefed without it.
   3. **Implement.** Spawn `ship:implementer` with the issue number, the contract
-     pasted in full, and the base branch. Record the PR number and the agent id;
-     the same implementer is resumed every round so it keeps its reasoning.
+     pasted in full, and the base branch. Record the PR number, the agent id, and
+     the branch head (`gh pr view <pr> --json headRefOid`, re-recorded each
+     round, read by 7); the same implementer is resumed every round so it keeps
+     its reasoning.
   4. **Gate.** First establish whether checks exist at all
      (`gh pr checks <pr> --json name`): an empty array means no CI, which
      `gh pr checks` signals by exiting non-zero, indistinguishable from a failure

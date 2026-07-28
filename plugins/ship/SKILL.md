@@ -42,6 +42,8 @@ Spawn `ship:implementer` with the issue number, the contract pasted in full, and
 
 Record the PR number and the agent's id. You resume this same agent every round, so it keeps its own reasoning.
 
+Record the branch head as well: `gh pr view <pr> --json headRefOid`. Step 7 compares against it, so re-record it at the end of every round.
+
 ## 4. CI gate
 
 First find out whether there are checks at all: `gh pr checks <pr> --json name`. An empty array means the repo has no CI, and `gh pr checks` reports that by exiting non-zero, which is indistinguishable from a failure if you do not look.
@@ -89,7 +91,7 @@ Print a summary: round number, findings per axis, the disposition of each, what 
    - the diff has grown past 600 changed lines or 20 files without the issue calling for that scale
    - the same finding recurs across two rounds with no progress
    - CI red twice in a row
-   - any force-push on the branch
+   - a force-push on the branch, which shows up as last round's head no longer being reachable: `git fetch`, then `git merge-base --is-ancestor <recorded-head> <current-head>` exits non-zero
 2. **Stop signal.** `gh pr view <pr> --json labels` contains `agent:stop`.
 3. **Round cap.** This was round 3.
 
