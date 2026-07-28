@@ -42,3 +42,34 @@ jobs:
             exit 1
           fi
           echo "Validated $found plugin(s)."
+
+      # Only plugins/ is scanned. Records in docs/decisions/ quote bare calls as
+      # history and must keep doing so.
+      - name: Check Skill() calls
+        run: |
+          fail=0
+          found=0
+          while IFS= read -r file; do
+            plugin=$(printf '%s' "$file" | cut -d/ -f2)
+            manifest="plugins/$plugin/.claude-plugin/plugin.json"
+            while IFS= read -r call; do
+              [ -n "$call" ] || continue
+              found=$((found + 1))
+              case "$call" in
+                *:*) ;;
+                *)
+                  echo "::error file=$file::bare Skill($call). Use <plugin>:<skill>, see ADR-0016."
+                  fail=1
+                  continue
+                  ;;
+              esac
+              target="${call%%:*}"
+              [ "$target" = "$plugin" ] && continue
+              if ! jq -e --arg d "$target" '(.dependencies // []) | index($d)' "$manifest" >/dev/null 2>&1; then
+                echo "::error file=$file::Skill($call) targets '$target', absent from dependencies in $manifest. See ADR-0006."
+                fail=1
+              fi
+            done < <(grep -oP 'Skill\(\K[^)]+' "$file" 2>/dev/null || true)
+          done < <(find plugins -name '*.md')
+          echo "Checked $found Skill() call(s)."
+          exit $fail
