@@ -5,6 +5,7 @@ model: opus
 isolation: worktree
 tools:
   - Read
+  - Write
   - Bash
   - Grep
   - Glob

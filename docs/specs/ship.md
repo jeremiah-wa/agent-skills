@@ -115,7 +115,9 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
 ## `ship:reviewer` (`agents/reviewer.md`)
 
 - **Frontmatter (current)**: `name: reviewer`; `description`; `model: opus`;
-  `isolation: worktree`; `tools: [Read, Bash, Grep, Glob]`.
+  `isolation: worktree`; `tools: [Read, Write, Bash, Grep, Glob]`. `Write` is
+  what makes a throwaway reproduction possible, and a reproduction is the
+  difference between a CONFIRMED and a PLAUSIBLE verdict.
   - *Pending [ADR-0010](../decisions/0010-extract-the-review-baseline-into-a-library-skill.md):*
     add `Skill` to `tools`; replace the inline baseline (the stance, the twelve
     smells, and the verify discipline below) with `Skill(review-baseline)`;
