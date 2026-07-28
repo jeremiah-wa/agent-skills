@@ -57,13 +57,22 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
   3. **Implement.** Spawn `ship:implementer` with the issue number, the contract
      pasted in full, and the base branch. Record the PR number and the agent id;
      the same implementer is resumed every round so it keeps its reasoning.
-  4. **CI gate.** `gh pr checks <pr> --watch`. Green: go to 5. Red: send the
-     failing logs (`gh run view <id> --log-failed`) to the implementer, re-enter
-     4. This is a free cycle, no review round consumed. Red twice in a row: a
-     breaker, go to 8.
+  4. **Gate.** First establish whether checks exist at all
+     (`gh pr checks <pr> --json name`): an empty array means no CI, which
+     `gh pr checks` signals by exiting non-zero, indistinguishable from a failure
+     unless looked for. **With checks**: `gh pr checks <pr> --watch`. Green: go
+     to 5. Red: send the failing logs (`gh run view <id> --log-failed`) to the
+     implementer, re-enter 4. This is a free cycle, no review round consumed. Red
+     twice in a row: a breaker, go to 8. **Without checks**: gate on the
+     contract's verify commands, run by the implementer on request, a failure
+     behaving exactly as red. The contract already carries verify commands for a
+     no-CI repo, so the gate exists; it runs in a worktree rather than on a
+     runner. Which gate ran is carried into 5, because the reviewer's licence to
+     skip lint, format, and types rests on it.
   5. **Review.** Spawn a **fresh** `ship:reviewer` every round, never resume one:
      independence is re-earned, not inherited. Give it the PR number, the issue
-     number, the contract, and every previous round's dispositions.
+     number, the contract, which gate ran in 4, and every previous round's
+     dispositions.
   6. **Dispose of every finding.** Each finding gets exactly one disposition on
      the record: **fix** (`SendMessage` to the implementer), **dispute** (reply
      on the thread with grounds), or **defer** (`gh issue create`, link it on the
@@ -124,9 +133,10 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
     add `Skill` to `tools`; replace the inline baseline (the stance, the twelve
     smells, and the verify discipline below) with `Skill(review-baseline)`;
     keep the execution shell (ground via `gh pr`, and the posting rules). Two
-    lines stay here as execution, not knowledge: "CI is green, so lint, format,
-    and types are not yours to report" (true only because `ship` gates on CI),
-    and the request-changes-or-approve verdict (a `gh pr review` act).
+    lines stay here as execution, not knowledge: the gate-dependent skip of
+    lint, format, and types (true only because `ship` gates on something, and
+    conditional on which gate ran), and the request-changes-or-approve verdict
+    (a `gh pr review` act).
 - **Responsibility**: adversarial review. Presume a defect is present, hunt
   across correctness, spec, and standards, verify every suspicion against the
   code, and post a GitHub review. Being cold is the point: no reasoning it never
@@ -152,8 +162,11 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
     - *Spec*: what the issue asked for that is missing or half-built; what is here
       that nobody asked for; what looks implemented but is subtly wrong.
     - *Standards*: the repo's own documented standards. Skip anything the repo's
-      tooling already enforces (CI is green, so formatting, lint, and types are
-      out). On top of that, this smell baseline, every item a labelled judgement
+      tooling already enforces: the brief names the gate that ran, and a green
+      one puts formatting, lint, and types out of scope. Where that gate was a
+      self-reported local verify rather than CI, they are back in scope and the
+      reviewer checks them itself. On top of that, this smell baseline, every
+      item a labelled judgement
       call rather than a hard violation, always overridden by a documented repo
       standard: **Mysterious Name**, **Duplicated Code**, **Feature Envy**, **Data
       Clumps**, **Primitive Obsession**, **Repeated Switches**, **Shotgun
@@ -175,7 +188,7 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
 - **Knowledge/execution split** (the basis of Pending ADR-0010): the stance, the
   twelve smells, the verify-and-failure-scenario discipline, and the
   blocking-versus-advisory classification are **knowledge** (they move to
-  `review-baseline`). Grounding via `gh pr`, the CI-green skip, and the
+  `review-baseline`). Grounding via `gh pr`, the gate-dependent skip, and the
   `gh pr review` verdict are **execution** (they stay here).
 
 ## `/grill-pr` (`skills/grill-pr/SKILL.md`)

@@ -40,7 +40,7 @@ List every suspicion. Do not filter, do not rank, do not soften. A hunch with no
 
 **Spec.** What did the issue ask for that is missing or half-built? What is here that nobody asked for? What looks implemented but is subtly the wrong behaviour?
 
-**Standards.** What the repo's own documented standards require. Skip anything the repo's tooling already enforces: CI is green, so formatting, lint, and types are not yours to report. On top of the repo's own rules, carry this smell baseline, which applies even where a repo documents nothing. A documented repo standard always overrides it, and every one of these is a labelled judgement call, never a hard violation:
+**Standards.** What the repo's own documented standards require. Skip anything the repo's tooling already enforces: your brief names the gate that ran, and a green one means formatting, lint, and types are not yours to report. Where that gate was a self-reported local verify rather than CI, treat those as back in scope and check them yourself. On top of the repo's own rules, carry this smell baseline, which applies even where a repo documents nothing. A documented repo standard always overrides it, and every one of these is a labelled judgement call, never a hard violation:
 
 - **Mysterious Name**: a name that does not reveal what it does or holds. Rename it; if no honest name comes, the design is murky.
 - **Duplicated Code**: the same logic shape in more than one hunk. Extract it, call it from both.

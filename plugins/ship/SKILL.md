@@ -44,19 +44,25 @@ Record the PR number and the agent's id. You resume this same agent every round,
 
 ## 4. CI gate
 
-Wait for checks: `gh pr checks <pr> --watch`.
+First find out whether there are checks at all: `gh pr checks <pr> --json name`. An empty array means the repo has no CI, and `gh pr checks` reports that by exiting non-zero, which is indistinguishable from a failure if you do not look.
+
+**With checks**, wait for them: `gh pr checks <pr> --watch`.
 
 - **Green**: go to step 5.
 - **Red**: send the failing logs (`gh run view <id> --log-failed`) to the implementer via `SendMessage`, then re-enter step 4. This is a free cycle and does not consume a review round, because no judgement was involved.
 - **Red twice in a row**: breaker. Go to step 8 and halt.
 
-The reviewer only ever sees code that builds, lints, types, and passes tests, so its findings are about things CI cannot see.
+**Without checks**, gate on the contract's verify commands instead: `SendMessage` the implementer to run them and report the output. A failure is red, and behaves exactly as above. The contract already carries verify commands for a repo with no CI, so this gate exists; it just runs in the implementer's worktree rather than on a runner.
+
+Carry which gate ran into step 5. The reviewer skips lint, format, and types only because something already enforced them, and a self-reported local run is weaker evidence than a runner.
+
+The reviewer only ever sees code that builds, lints, types, and passes tests, so its findings are about things the gate cannot see.
 
 ## 5. Review
 
 Spawn a **fresh** `ship:reviewer` every round. Never resume one: independence is re-earned each time, not inherited.
 
-Give it the PR number, the issue number, the contract, and the dispositions from every previous round so settled disputes are not relitigated.
+Give it the PR number, the issue number, the contract, which gate ran in step 4, and the dispositions from every previous round so settled disputes are not relitigated.
 
 It posts its own `gh pr review`. Read it back with `gh pr view <pr> --json reviews,comments`.
 

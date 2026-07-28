@@ -54,5 +54,5 @@ direction was questioned. See
 | **Repo contract** | The set of facts a cold agent needs to work in a repo without guessing (base, bootstrap, verify, branch, commit, invariants, PR template). Lives in the target repo's `AGENTS.md` under `## Agent contract`. |
 | **Round** | One implement-then-review cycle. Capped at three. |
 | **Disposition** | The recorded outcome of a review finding: **fix**, **dispute**, or **defer**. Every finding gets exactly one, on the record. |
-| **Circuit breaker** | A condition that halts a run at a round boundary (unrunnable verify, runaway diff, a finding recurring with no progress, CI red twice, any force-push). |
+| **Circuit breaker** | A condition that halts a run at a round boundary (unrunnable verify, runaway diff, a finding recurring with no progress, the gate red twice, a force-push). |
 | **Preflight and refuse** | The house posture: a workflow needing a tool checks for it and stops with a clear message, rather than degrading to a quieter path that then rots. |
