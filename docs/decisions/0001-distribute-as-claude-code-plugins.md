@@ -5,9 +5,9 @@
 
 ## Context and problem statement
 
-This collection has to install on any machine the author works from. Two
-candidate channels exist. Claude Code's native plugin marketplace
-(`/plugin marketplace add owner/repo`), and the `skills` CLI
+This collection has to install on any machine I work from. Two candidate
+channels exist. Claude Code's native plugin marketplace (`/plugin marketplace
+add owner/repo`), and the `skills` CLI
 ([vercel-labs/skills](https://github.com/vercel-labs/skills),
 `npx skills@latest add owner/repo`), which is already how third-party skills
 reach this machine. The channel has to be chosen before the repo layout can be,
@@ -54,8 +54,9 @@ that carries agents, and every workflow here is built out of agents.
 
 ## Revisit when
 
-The decision is to stay on Claude Code, the only harness in use here, and revisit
-if that changes. This note records why so the question is not re-litigated.
+The decision is to stay on Claude Code, the only harness in use here, and
+revisit if that changes. This note records why so the question is not
+re-litigated.
 
 Codex CLI has since grown native subagents (`.codex/agents/*.toml`, worktree
 isolation, per-agent roles), so the implementer/reviewer pattern is no longer
@@ -68,9 +69,9 @@ model-selection mechanism, and it lives in the agent, not the skill.
 The hope is that this repo grows to support multiple harnesses if and when a
 second harness comes into use here, and a mechanism to distribute agents across
 harnesses (a skills-CLI that carries agents, or a shared agent-spec a generator
-can compile) exists. Until both are true, the Claude-Code-native files already in
-this repo are the canonical source such a mechanism would consume, so keeping the
-door open costs nothing today.
+can compile) exists. Until both are true, the Claude-Code-native files already
+in this repo are the canonical source such a mechanism would consume, so keeping
+the door open costs nothing today.
 
 ## Pros and cons of the options
 

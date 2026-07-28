@@ -12,8 +12,8 @@ default.
 
 ## Decision drivers
 
-- A public marketplace source needs **no git credentials**, which is the shortest
-  path to "any machine".
+- A public marketplace source needs **no git credentials**, which is the
+  shortest path to "any machine".
 - A private one still installs, but every machine needs credentials for the repo
   (`gh auth` or a credential helper) before the marketplace resolves.
 - The collection is unfinished. Most of the skills named in
@@ -34,11 +34,12 @@ call that retires `mattpocock-skills`.
 
 ### Consequences
 
-- Good, because a half-written collection is not public while it is half-written.
-- Good, because the trigger is one the author already has to make, rather than a
-  second thing to remember.
-- Bad, because the auth friction lands during the period of heaviest cross-machine
-  use, which is the cost this decision knowingly accepts.
+- Good, because a half-written collection is not public while it is
+  half-written.
+- Good, because the trigger is one I already have to make, rather than a second
+  thing to remember.
+- Bad, because the auth friction lands during the period of heaviest
+  cross-machine use, which is the cost this decision knowingly accepts.
 
 ## Pros and cons of the options
 
@@ -46,13 +47,14 @@ call that retires `mattpocock-skills`.
 
 - Good, because install is credential-free everywhere immediately.
 - Good, because prior art can be credited visibly.
-- Bad, because unfinished work and working practice are public while in progress.
+- Bad, because unfinished work and working practice are public while in
+  progress.
 
 ### Private permanently
 
 - Good, because nothing is ever exposed.
-- Bad, because it permanently keeps friction on the path this repo exists to make
-  frictionless.
+- Bad, because it permanently keeps friction on the path this repo exists to
+  make frictionless.
 
 ### Private now, public at switchover
 

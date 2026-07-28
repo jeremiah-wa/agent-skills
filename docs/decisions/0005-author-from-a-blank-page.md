@@ -11,15 +11,15 @@ options differ sharply in speed, in voice, and in legal obligation.
 
 ## Decision drivers
 
-- The stated intent is that these skills are the author's own, encoding the
-  author's practice rather than someone else's.
+- The stated intent is that these skills are my own, encoding my practice rather
+  than someone else's.
 - Copyright covers **expression**, not ideas or terminology. The established
-  vocabulary (progressive disclosure, information hierarchy, leading word, no-op,
-  sediment, premature completion) is technical language, freely usable.
+  vocabulary (progressive disclosure, information hierarchy, leading word,
+  no-op, sediment, premature completion) is technical language, freely usable.
 - Copy-and-edit produces a **derivative work**. MIT then obliges carrying the
   upstream copyright and permission notice.
-- A file that starts as someone else's keeps their structure and voice long after
-  the words change.
+- A file that starts as someone else's keeps their structure and voice long
+  after the words change.
 - Writing from scratch is slow, and slowness is a filter: it forces the question
   of whether this skill is one we actually have an opinion about.
 
@@ -40,20 +40,21 @@ original prose and original opinions.
 This is how a skill enters the repo at every stage, not only at the bootstrap.
 Self-invention is the phase, not authorship: later, an external skill may be
 adopted rather than invented, but adoption runs through the same blank page. It
-qualifies only once it has earned its place by **examined use** (the author has
-used it and judged it good), and it is then written here to the house standard and
-voice, never copied. A conformed adoption is therefore an authored skill carrying
-no attribution obligation, which is exactly why the blank-page rule holds whether
-the idea was invented or found.
+qualifies only once it has earned its place by **examined use** (I have used it
+and judged it good), and it is then written here to the house standard and
+voice, never copied. A conformed adoption is therefore an authored skill
+carrying no attribution obligation, which is exactly why the blank-page rule
+holds whether the idea was invented or found.
 
 ### Consequences
 
 - Good, because no attribution obligation attaches to anything in this repo.
-- Good, because the result is in the author's voice and structure from line one.
-- Good, because it forces a per-skill judgement about whether the skill is wanted.
+- Good, because the result is in my voice and structure from line one.
+- Good, because it forces a per-skill judgement about whether the skill is
+  wanted.
 - Bad, because it is slower per skill, and upstream refinement is not inherited.
-- Note: crediting prior art in `README.md` is courtesy rather than obligation, and
-  is worth doing.
+- Note: crediting prior art in `README.md` is courtesy rather than obligation,
+  and is worth doing.
 
 ## Pros and cons of the options
 
@@ -71,7 +72,7 @@ the idea was invented or found.
 
 ### Mixed per skill
 
-- Good, because it is pragmatic: copy where the original is close, write where it
-  is not.
+- Good, because it is pragmatic: copy where the original is close, write where
+  it is not.
 - Bad, because which files are derivative must then be tracked for attribution,
   and that thread is easy to lose.

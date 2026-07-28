@@ -22,8 +22,8 @@ copying.
   dependency direction was questioned directly.
 - `AGENTS.md` states its own design as "thin by design, defers rather than
   restates", so it should shed anything a dedicated doc can own.
-- This repo is also intended as a **test target for the author's own agentic
-  workflow**, and a repo with no documented spec is a poor target.
+- This repo is also intended as a **test target for my own agentic workflow**,
+  and a repo with no documented spec is a poor target.
 
 ## Considered options
 
@@ -47,8 +47,9 @@ Chosen option: "Current-state docs plus an append-only ledger", following
 
 `AGENTS.md` stays thin and defers to these rather than restating them.
 
-[ADR-0011](0011-docs-must-reconstruct-the-repo.md) later raises this doc set from
-a description to a reconstructable specification, adding `docs/COMPONENTS.md` and
+[ADR-0011](0011-docs-must-reconstruct-the-repo.md) later raises this doc set
+from a description to a reconstructable specification, adding
+`docs/COMPONENTS.md` and
 `docs/BUILD.md`, once the mission made the specification the artifact being kept
 rather than a support for the code.
 
@@ -56,15 +57,15 @@ rather than a support for the code.
 
 - Good, because reasons are recorded where they can be corrected once instead of
   re-guessed every time.
-- Good, because rejected options are captured while they are still live, which is
-  the half of MADR that cannot be reconstructed later.
+- Good, because rejected options are captured while they are still live, which
+  is the half of MADR that cannot be reconstructed later.
 - Good, because it gives this repo a spec, which it needs to serve as a test
   target for its own workflows.
-- Bad, because four docs must be kept current, and the coupling rule (an ADR also
-  edits the canonical doc and links back) is enforced by discipline alone.
-- Bad, because this repo remains a **weak test of `ship`'s verify loop**: there is
-  no build and no test suite, so `claude plugin validate --strict` is the only
-  mechanical gate. It exercises the orchestration (worktrees, handoff,
+- Bad, because four docs must be kept current, and the coupling rule (an ADR
+  also edits the canonical doc and links back) is enforced by discipline alone.
+- Bad, because this repo remains a **weak test of `ship`'s verify loop**: there
+  is no build and no test suite, so `claude plugin validate --strict` is the
+  only mechanical gate. It exercises the orchestration (worktrees, handoff,
   dispositions, breakers) and barely exercises the parts that depend on CI.
 
 ## Pros and cons of the options
@@ -72,8 +73,8 @@ rather than a support for the code.
 ### `AGENTS.md` only
 
 - Good, because it is one file, already loaded by agents working here.
-- Bad, because it is the status quo that produced a wrong invariant with no way to
-  catch it.
+- Bad, because it is the status quo that produced a wrong invariant with no way
+  to catch it.
 - Bad, because it would stop being thin, which is its stated design.
 
 ### ADRs only
@@ -85,7 +86,8 @@ rather than a support for the code.
 ### ADRs plus a glossary
 
 - Good, because it covers both problems actually observed.
-- Bad, because the current-state description then has no home outside `AGENTS.md`.
+- Bad, because the current-state description then has no home outside
+  `AGENTS.md`.
 
 ### Current-state docs plus a ledger
 
