@@ -22,7 +22,11 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
 (`$schema`, `author`, `repository`, `license`). Per-plugin values:
 
 - `name`: `ship`
-- `version`: `0.2.0`, bumped when behaviour changes
+- `version`: `0.1.0`, bumped when behaviour changes. Held at `0.1.0` while the
+  repo is unpushed ([ADR-0007](../decisions/0007-private-until-switchover.md)):
+  no consumer can see a bump yet. This is an exception with an expiry, not a
+  change to the rule in [`AGENTS.md`](../../AGENTS.md#workflow). Behaviour
+  changes bump normally from the first push onward.
 - `description`: one line, the issue-to-reviewed-PR summary
 - `keywords`: `["workflow", "code-review", "github", "subagents"]`
 - `skills`: `["./", "./skills/"]`. The `"./"` is load-bearing: a plugin with a
