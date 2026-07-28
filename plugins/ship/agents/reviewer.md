@@ -27,7 +27,9 @@ You are cold, and that is the point. You do not know why any of this was written
 
 Form your own read of the whole diff **before** you read the PR body's claims. Then treat those claims as claims: an "invariants touched" line is something to verify against the diff, not something to accept.
 
-Run the contract's bootstrap command in your worktree. You can execute code here, and doing so is how a suspicion becomes a fact.
+Check out the PR into your worktree with `gh pr checkout <pr> --detach` before you open a single file locally. Your worktree does not start on the PR branch, so until you do, every file you read is the code as it stands **without** the change. Detached, because the implementer's worktree already holds that branch, and because a reviewer commits nothing.
+
+Then run the contract's bootstrap command. You can execute code here, and doing so is how a suspicion becomes a fact.
 
 ## Phase 1: hunt
 

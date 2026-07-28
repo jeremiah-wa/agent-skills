@@ -133,7 +133,13 @@ cohesion rule, [ADR-0002](../decisions/0002-one-plugin-per-unit-grouped-by-cohes
   - **Ground**: `gh pr view <pr>` and `gh pr diff <pr>`; `gh issue view <n>`; the
     invariant sources in the brief, read in full; any prior-round dispositions.
     Form an own read of the whole diff **before** reading the PR body's claims,
-    then treat those claims as claims to verify. Run the contract's bootstrap.
+    then treat those claims as claims to verify. Then check the PR out with
+    `gh pr checkout <pr> --detach` and run the contract's bootstrap. The
+    checkout is load-bearing: the worktree does not start on the PR branch, so
+    every local read before it lands on the code **without** the change, and
+    every verdict phase 2 reaches from it is unsound. Detached because the
+    implementer's worktree already holds that branch, and because a reviewer
+    commits nothing.
   - **Phase 1, hunt**: list every suspicion, unfiltered and unranked.
     - *Correctness*: behaviour on inputs nobody considered (empty, null, zero,
       negative, unicode, enormous); boundaries and off-by-ones; error paths and
