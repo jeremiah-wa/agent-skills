@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "agent-skills",
+  "name": "agent-skills-trial",
   "description": "Curated Claude Code workflows. Each plugin bundles its own skills and agents so a workflow ships as one piece.",
   "owner": {
     "name": "Jeremiah Wangaruro",
