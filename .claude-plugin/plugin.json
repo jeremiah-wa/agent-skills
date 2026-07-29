@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "agent-skills",
+  "version": "0.2.0",
+  "description": "Curated Claude Code workflows: ship, tdd, committing.",
+  "author": {
+    "name": "Jeremiah Wangaruro",
+    "email": "jeremiahwa98@gmail.com"
+  },
+  "repository": "https://github.com/jeremiah-wa/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "ship",
+    "tdd",
+    "commits"
+  ]
+}
