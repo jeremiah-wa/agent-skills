@@ -28,6 +28,7 @@ just doc edits, not ADRs. (See the Workflow section of [`AGENTS.md`](../../AGENT
 |---|---|
 | `Proposed` | Written to hold a comparison; no outcome chosen yet. Not in force. |
 | `Accepted` | In force. |
+| `Rejected` | Proposed and turned down, so never in force. Retained because the drivers and the evidence are the perishable part, and a rejected option gets reproposed otherwise. |
 | `Superseded by ADR-NNNN` | Replaced; retained for the audit trail, never deleted. |
 
 ## Index
@@ -50,4 +51,4 @@ just doc edits, not ADRs. (See the Workflow section of [`AGENTS.md`](../../AGENT
 | [0014](0014-plugin-specs-live-in-the-plugin.md) | A plugin's spec lives in the plugin | Superseded by ADR-0015 |
 | [0015](0015-specs-are-one-file-per-plugin-under-docs.md) | Specs are one file per plugin, under `docs/specs/` | Accepted |
 | [0016](0016-call-skills-by-their-namespaced-name.md) | Call skills by their namespaced name | Accepted |
-| [0017](0017-restructure-around-a-flat-skills-tree.md) | Restructure around a flat `skills/` tree | Proposed |
+| [0017](0017-restructure-around-a-flat-skills-tree.md) | Restructure around a flat `skills/` tree | Rejected |

@@ -1,6 +1,6 @@
 # 0017. Restructure around a flat `skills/` tree
 
-- **Status:** Proposed
+- **Status:** Rejected
 - **Date:** 2026-07-29
 
 ## Context and problem statement
@@ -11,7 +11,7 @@
 That evidence is real but it tested the wrong shape. It tested `..` escaping
 **out of** `plugins/<name>/`. When a marketplace entry sets `source: "./"`, the
 plugin root **is** the marketplace root, so `./skills/<name>` needs no `..` and
-validates clean. The option ADR-0013 closed is open.
+validates clean. The option ADR-0013 closed looked open again.
 
 Two further facts arrived with it. The [Agent Skills
 specification](https://agentskills.io/specification) defines no plugin, no
@@ -20,13 +20,17 @@ optional `scripts/`, `references/`, and `assets/`, and `name` must match the
 parent directory. Everything under `.claude-plugin/` is a Claude Code
 distribution layer sitting on top of a deliberately packaging-agnostic format.
 And the spec requires a skill's file references to resolve **from the skill
-root**, which `plugins/ship/skills/grill-pr/SKILL.md:15` violates: it reaches
+root**, which `plugins/ship/skills/grill-pr/SKILL.md:15` violated: it reached
 `../../reference/repo-contract.md`, outside its own root.
 
-So the layout question is live again, and it now has a portability argument
-behind it that it did not have in ADR-0013.
+So the layout question was reopened with a portability argument behind it that
+it did not have in ADR-0013. Every option below was then built, installed, and
+measured. The trials are what closed it.
 
 ## Decision drivers
+
+These are the drivers as they stood when the question was reopened. Two of them
+did not survive the trials, and are corrected in place below.
 
 - **The skill is the portable unit; the plugin is the vendor wrapper.** A layout
   that keeps spec-shaped skill directories survives a consumer that is not
@@ -37,15 +41,17 @@ behind it that it did not have in ADR-0013.
 - **Two safety nets currently come for free.** Skill frontmatter is validated
   when the validator is pointed at a plugin directory, and each plugin's version
   is isolated from the others. Both are load-bearing and both are at risk.
-- **`marketplace.json` entries are more capable than the repo assumes.**
-  Confirmed by trial: `strict: false` lets an entry define a plugin whole, and
-  `skills`, `agents`, and `dependencies` all work from an entry. Installing an
-  entry resolves and installs its declared dependencies.
+- **~~`marketplace.json` entries are more capable than the repo assumes.~~
+  Corrected.** `strict: false` does let an entry define a plugin whole, and
+  `skills` and `dependencies` do work from an entry. **`agents` does not, and
+  neither does `commands`.** Both validate clean from an entry and load nothing.
+  See the measurement under "B" below. This driver was the load-bearing one for
+  option B and it was wrong.
 - **Enable and disable remain per-plugin.** Every skill in an enabled plugin
   pays metadata cost in every session, roughly 100 tokens
   ([ADR-0002](0002-one-plugin-per-unit-grouped-by-cohesion.md) measured 80 to
-  100). At five skills that is about 500 tokens, which is now a concrete number
-  rather than an unbounded fear.
+  100). This turned out to be the wrong unit to count in: agents cost more than
+  skills do, and under B they are not per-plugin at all.
 - **The collection is still private** ([ADR-0007](0007-private-until-switchover.md)),
   so relative `source` paths are not yet cached by anyone and moving directories
   is still cheap. It gets monotonically more expensive.
@@ -61,137 +67,174 @@ behind it that it did not have in ADR-0013.
 
 ## Decision outcome
 
-Chosen option: **pending**. This record exists to hold the comparison and the
-trial evidence; the choice between B and C is the open question it is written to
-settle.
+Chosen option: **A, keep `plugins/<name>/`**, because the restructure's two
+premises did not survive being built. B costs roughly twice what C costs while
+being the option that loses the safety nets, and the spec violation that
+prompted the question turned out to be independent of the layout entirely.
 
-The recommendation is **C**, on the grounds that it delivers the flat
-spec-shaped tree, which is the portability goal, while keeping both safety nets
-intact, and that the cost it charges (about 500 tokens per session) is smaller
-than the cost B charges (rebuilding frontmatter validation and version isolation
-by hand, and never being allowed to let either lapse).
+The proposal in this record's title is therefore **rejected**. Nothing moves.
+`plugins/<name>/` stays, one `plugin.json` per plugin stays, and
+[ADR-0002](0002-one-plugin-per-unit-grouped-by-cohesion.md) and
+[ADR-0013](0013-keep-plugins-in-a-plugins-directory.md) both stand as written
+and remain `Accepted`. Neither is superseded.
 
-**This flips if per-plugin enable/disable is a requirement rather than a
-preference.** B is the only option that keeps it alongside the flat tree. If a
-user must be able to take `tdd` without `ship`, C is disqualified and the
-correct answer is B with all four of its mitigations funded up front.
+Option A's fixes proceed on their own, tracked as issues rather than folded in
+here, because none of them needs a layout change to land.
+
+### The trials
+
+Every shape below was built as a branch, installed from a local marketplace, and
+measured with `claude plugin details`. The branches are named so the evidence is
+reproducible.
+
+| Branch | Shape | All three installed | `committing` alone |
+|---|---|---|---|
+| `trial/0017-option-b-original` | B as this record specified it | ~686 tok | ~192 tok |
+| `trial/0017-nested-skills` | B with `grill-pr` nested under `ship` | ~655 tok | ~216 tok |
+| `trial/0017-one-plugin` | C | ~339 tok | not possible |
+| `trial/0017-status-quo-plus-command` | `plugins/`, `grill-pr` as a command | ~351 tok | ~56 tok |
+| `trial/0017-skill-inside-plugin` | `plugins/<name>/skills/<name>/` | ~351 tok | ~56 tok |
+
+Figures are the always-on cost added to every session, summed across the three
+plugins where they install separately.
+
+Four findings came out of this, in descending order of how much they changed the
+answer.
+
+**`agents` and `commands` on a marketplace entry are inert.** They validate
+clean, load nothing, and suppress nothing. An entry declaring
+`"agents": ["./skills/ship/agents/reviewer.md"]` reported `Agents (0)`; the same
+files at the plugin root reported `Agents (2)`. Declaring `"agents": []`
+suppressed nothing either. Under `source: "./"` the plugin root **is** the repo
+root, so every agent and command in the repo loads into every entry with no
+opt-out. Measured: `tdd` came back `Agents (2) implementer, reviewer` and ~202
+tokens for a skill that is ~66 tokens on its own.
+
+That is what inverts the cost comparison. This record recommended C on the
+grounds that its roughly 500 tokens per session was the price of keeping the
+safety nets. C measures ~339 and B measures ~686, and B is the option without
+the safety nets.
+
+**Per-plugin enable and disable is the property B was chosen for, and B only
+half delivers it.** B isolates skills and globalises agents. Keeping
+`plugins/<name>/` isolates both, at ~351 rather than ~686.
+
+**Nesting a skill inside another skill's directory buys nothing.** An entry
+declaring `./skills/ship` reported `Skills (1)`; the nested
+`./skills/ship/skills/grill-pr` had to be listed explicitly to load, which is
+exactly what a flat tree would have cost. Directory nesting is presentational.
+
+**`skills-ref validate` checks frontmatter and nothing else.** A skill whose body
+reaches `../outside/contract.md` passes clean. The spec violation this record
+opens with is real, and no available tool enforces it. What the tool does catch
+on this repo is `disable-model-invocation`, a Claude Code extension the spec's
+frontmatter allow-list rejects.
+
+A fifth finding is unrelated to the layout and is tracked separately: the
+marketplace `name` field, `agent-skills`, is on Claude Code's reserved list, so
+`claude plugin marketplace add` has never worked against this repo.
 
 ### Consequences
 
-Common to B and C:
-
-- Good, because every skill becomes a spec-conformant directory whose `name`
-  matches its parent structurally rather than by coincidence.
-- Good, because `grill-pr` stops reaching outside its own root, so it is
-  portable for the first time.
-- Bad, because the authoring junctions on every machine must be repointed, and
-  a junction to `skills/<name>` carries `SKILL.md` but not the repo-root
-  `agents/`, so the authoring loop for `ship` needs rechecking.
-- Bad, because ADR-0013 and ADR-0002 both quote `plugins/`-era paths. Records
-  are append-only, so those stand as written and are read as historical.
+- Good, because nothing moves. No path reference, no junction on any machine, no
+  `source` in `marketplace.json`, and no record needs superseding.
+- Good, because both safety nets are kept without having to fund a replacement.
+  Frontmatter is validated by pointing the validator at a plugin directory, and
+  each plugin's version stays isolated from the others.
+- Good, because the question is now settled on measurements rather than on
+  reasoning about the platform, and the branches keep the measurements
+  reproducible.
+- Bad, because the portability goal is unmet. `plugins/<name>/` conforms to the
+  spec because each plugin is named after its one skill, which is a coincidence
+  the layout does not enforce. Making that structural means
+  `plugins/<name>/skills/<name>/`, which measures identically and was not
+  adopted here only because withdrawing `grill-pr` removed the reason it
+  mattered.
+- Bad, because a skill still cannot appear in more than one plugin. Nothing in
+  the repo needs that today, and ADR-0007 means there are no other consumers to
+  need it either, so the cost is deferred rather than paid.
 - Neutral: [ADR-0016](0016-call-skills-by-their-namespaced-name.md) is
-  unaffected. The namespace is the plugin name, which under B comes from the
-  marketplace entry and under C is the single plugin.
-
-Specific to B:
-
-- Bad, because `claude plugin validate . --strict` no longer validates skill
-  frontmatter at all. Confirmed by trial: a `SKILL.md` with no `description`,
-  an uppercase name, consecutive hyphens, and a name not matching its directory
-  passed clean, exit 0. The same file fails validation today when the validator
-  is pointed at a plugin directory. CI would go green on a skill that cannot
-  load. `skills-ref validate` becomes mandatory, not optional.
-- Bad, because every plugin shares `source: "./"` and therefore shares the repo
-  HEAD as its version. Confirmed by trial: a commit touching only one skill
-  bumped an untouched plugin from `e65f83adf898` to `9a61dfbd9152`. Avoiding
-  this requires an explicit `version` on every entry, bumped by hand, which is
-  the manual discipline the platform docs warn produces stale versions that mask
-  real changes.
-- Bad, because `marketplace.json` becomes the single point of truth and failure
-  for every plugin's wiring. What a plugin ships with stops being answerable
-  from its directory.
-- Bad, because `validate.yml` needs a genuine rewrite rather than a path edit:
-  the plugin loop at lines 29 to 44 iterates nothing, and the `Skill()` checker
-  at lines 53 to 54 reads `plugins/$plugin/.claude-plugin/plugin.json`, which
-  will not exist. The guarantee in
-  [ADR-0006](0006-declare-invoked-skills-as-dependencies.md) is only as good as
-  that script.
-- Bad, because migration is all-or-nothing. `strict: false` alongside a
-  `plugin.json` that declares components is a load failure, not a merge.
-
-Specific to C:
-
-- Good, because `repo-contract.md` stays a file at the repo root, shared freely,
-  with no mechanism and no behavioural change.
-- Good, because one `plugin.json` means frontmatter validation keeps working
-  unchanged and there is one version to bump.
-- Bad, because enable and disable become all-or-nothing for the whole
-  collection, which is the tax ADR-0002 was written to avoid.
-- Bad, because the internal dependency graph collapses. ADR-0003 and ADR-0006
-  become moot, and the `Skill()` CI check has nothing left to verify beyond
-  namespacing.
-- Bad, because a future consumer who wants only `committing` has no way to take
-  only `committing`.
-
-If either is accepted, ADR-0002 and ADR-0013 need `Superseded by ADR-0017`, and
-`ARCHITECTURE.md` needs its Shape, Resolution, and Boundaries sections rewritten.
+  unaffected. The namespace is the plugin name, which is unchanged.
 
 ## Pros and cons of the options
 
+### A. Keep `plugins/<name>/`, fix only the violations
+
+Measured on `trial/0017-status-quo-plus-command`: ~351 tokens for all three,
+~56 for `committing` alone, `Agents (0)` on the plugins that ship none.
+
+- Good, because it is the only option that isolates both skills **and** agents
+  per plugin, which is what the platform actually charges for.
+- Good, because nothing breaks, no record is superseded, and the authoring
+  junctions on every machine keep resolving.
+- Good, because its fixes are required under B, C, and D alike, so it was always
+  the correct first step regardless of what followed.
+- Bad, because it delivers none of what prompted the question: the flat tree,
+  reuse of a skill across plugins, and filepath-independence.
+- Bad, because spec conformance rests on the naming coincidence described above
+  rather than on structure.
+
 ### B. Flat tree, marketplace entries are the authority
 
-Verified working end to end: validates `--strict`, installs, and installing an
-entry resolved and installed its two declared dependencies.
+Validates `--strict`, installs, and installing an entry resolves and installs
+its declared dependencies. Everything below is measured, not predicted.
 
 - Good, because filepath stops determining packaging, which was the original
   goal. Adding a skill is one directory and one line.
 - Good, because one skill can appear in several entries, which the current
   layout cannot express at all.
-- Good, because it keeps per-plugin enable and disable, the property ADR-0002
-  correctly identified as the platform's real currency.
 - Good, because it is what `anthropics/skills` does in production: 16 skills in
-  a flat tree, zero `plugin.json` files, three entries slicing it.
-- Bad, because it silently loses frontmatter validation (see Consequences).
-- Bad, because it couples every plugin's version to the repo HEAD.
+  a flat tree, zero `plugin.json` files, three entries slicing it. That repo
+  ships no agents, so it never meets the finding below.
+- Bad, because **agents and commands are repo-global and cannot be scoped**.
+  This is the finding that decided it. `committing` alone costs ~192 tokens for
+  a ~56-token skill, because `ship`'s two agents are in it whether or not
+  anyone wants them.
+- Bad, because it is the **most expensive** of the shapes measured, ~686 against
+  ~351, since the agents load once per entry.
+- Bad, because it keeps per-plugin enable and disable only for skills, which
+  undercuts the one property that made it worth considering.
+- Bad, because `claude plugin validate . --strict` no longer validates skill
+  frontmatter at all. A `SKILL.md` with no `description`, an uppercase name,
+  consecutive hyphens, and a name not matching its directory passed clean, exit
+  0. CI would go green on a skill that cannot load.
+- Bad, because every plugin shares `source: "./"` and therefore shares the repo
+  HEAD as its version. A commit touching one skill bumped an untouched plugin
+  from `e65f83adf898` to `9a61dfbd9152`. Avoiding this needs an explicit
+  `version` on every entry, bumped by hand.
 - Bad, because `source: "./"` copies the entire repo into the cache once per
-  entry. Confirmed by trial: three entries produced three complete copies,
-  including skills each entry does not load. Noise at text-file scale; not noise
-  if `scripts/` ever carries dependencies.
+  entry. Three entries produced three complete copies, each carrying `docs/`,
+  `.github/`, and the other entries' skills.
+- Bad, because it forces `repo-contract` to become a skill, which is a
+  behavioural change and not only a move. A link is read deterministically every
+  time; a skill is invoked when the model decides to. `ship`'s preflight is
+  built on "you cannot brief a cold agent without a contract".
+- Bad, because `marketplace.json` becomes the single point of truth and failure
+  for every plugin's wiring, and `validate.yml` needs a rewrite rather than a
+  path edit.
 - Bad, because `--plugin-dir`, local-path installs, and bare clones stop working
-  permanently. ADR-0001 already chose marketplace-only, so this costs nothing
-  today, but it closes a door rather than leaving it ajar.
-- Bad, because it makes [ADR-0010](0010-extract-the-review-baseline-into-a-library-skill.md)
-  a prerequisite rather than a plan: `repo-contract` becomes a skill, and
-  `ship:reviewer` has no `Skill` tool with which to reach it.
-- Bad, because a shared file becoming a skill is a behavioural change. A link is
-  read deterministically; a skill is invoked by model decision.
+  permanently.
 
 ### C. One plugin, whole repo
 
 The shape `vercel/vercel-plugin` uses: repo root is the plugin, `source: "./"`,
 41 skills in one flat `skills/`, one `plugin.json`, `strict` left alone.
+Measured at ~339 tokens on `trial/0017-one-plugin`.
 
 - Good, because it gets the flat spec-shaped tree while keeping a real
   `plugin.json`, so standalone installability survives.
 - Good, because one cache copy, one version, one manifest, and the simplest
   possible CI.
-- Good, because it needs no mitigations funded before it is safe to adopt.
-- Bad, because it costs per-plugin enable and disable outright.
-- Bad, because every skill pays metadata cost in every session whether or not
-  the user wants it.
+- Good, because it is the cheapest shape measured, though only by ~12 tokens
+  against keeping `plugins/`.
+- Bad, because it costs per-plugin install outright, and ~12 tokens is not a
+  price worth taking that for.
+- Bad, because the internal dependency graph collapses. ADR-0003 and ADR-0006
+  become moot, and the `Skill()` CI check has nothing left to verify beyond
+  namespacing.
 - Bad, because this shape only exists at N=1. A shared `skills/` tree with
   several `plugin.json` files is impossible: each manifest would need
   `../skills/<name>`, which is the `..` ADR-0013 correctly found is rejected.
-
-### A. Keep `plugins/<name>/`, fix only the violations
-
-- Good, because nothing breaks, no record is superseded, and it is half a day.
-- Good, because its fixes (resolve the `../../` escape, rename `reference/` to
-  `references/`, add `license` and `compatibility` to frontmatter, add
-  `skills-ref validate` to CI) are required under B, C, and D alike, so it is
-  the correct first step regardless of what follows.
-- Bad, because it delivers none of what prompted the question: the flat tree,
-  reuse of a skill across plugins, and filepath-independence.
 
 ### D. Split into two repos
 
@@ -204,3 +247,15 @@ marketplace repo whose entries use a `github` source.
   keeps the collection private, so there are no other consumers to serve.
 - Bad, because two repos means two release cadences and cross-repo version
   pinning.
+
+## Corrections to this record
+
+Two claims made when this record was written did not survive the trials. They
+are struck through above rather than deleted, because the record is the account
+of a decision and the wrong turns are part of it.
+
+- **`agents` works from a marketplace entry.** It does not. Neither does
+  `commands`. Both validate and load nothing. This was the driver B rested on.
+- **`license` and `compatibility` must be added to skill frontmatter.** They are
+  optional. `plugins/tdd` and `plugins/committing` pass `skills-ref validate`
+  without either. What actually fails is `disable-model-invocation`.
