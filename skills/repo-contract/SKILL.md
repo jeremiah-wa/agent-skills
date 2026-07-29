@@ -1,4 +1,7 @@
-# Repo contract
+---
+name: repo-contract
+description: "Resolve the repo contract a cold agent needs: base, bootstrap, verify, branch, commit, invariants, PR template. Use before briefing any cold agent."
+---
 
 The contract is everything a cold agent needs in order to work in this repo without guessing. It lives in `AGENTS.md` under a `## Agent contract` heading, so it is version controlled, readable by humans, and correctable once rather than re-guessed every run.
 

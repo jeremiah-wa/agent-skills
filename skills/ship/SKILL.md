@@ -34,7 +34,7 @@ Everything downstream keys off the issue number.
 
 ## 2. Repo contract
 
-Follow [`reference/repo-contract.md`](reference/repo-contract.md). You cannot brief a cold agent without a contract.
+Follow `Skill(ship:repo-contract)`. You cannot brief a cold agent without a contract.
 
 ## 3. Implement
 
